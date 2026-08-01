@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="TruthLens AI - Intelligent Fake News Detection API",
-    description="Multi-Modal Machine Learning & NLP API for news veracity classification, OCR, PDF extraction, URL scraping, and fact-checking.",
+    description="AI Fake News Detection API for raw text analysis with explainable veracity classification.",
     version="2.0.0",
     lifespan=lifespan,
     docs_url="/docs",

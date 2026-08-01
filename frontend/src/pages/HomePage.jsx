@@ -71,7 +71,7 @@ export default function HomePage({ setActivePage, setPreloadedText }) {
           </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
-            Verify article authenticity instantly. TruthGuard AI utilizes advanced TF-IDF vectorization, lemmatization, and multi-model machine learning benchmarked on the ISOT dataset to distinguish truth from sensationalized deception.
+            Verify article authenticity instantly. TruthLens AI utilizes advanced TF-IDF vectorization, lemmatization, and raw text ML classification benchmarked on the ISOT dataset to distinguish truth from sensationalized deception.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-4">
@@ -100,7 +100,7 @@ export default function HomePage({ setActivePage, setPreloadedText }) {
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Core System Features</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Engineered using modern NLP preprocessing, ensemble evaluation, and responsive design.
+            Engineered using modern NLP preprocessing, raw text verification, and responsive design.
           </p>
         </div>
 
@@ -111,7 +111,7 @@ export default function HomePage({ setActivePage, setPreloadedText }) {
             </div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">NLP Pipeline</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Complete text cleaning: URL & HTML removal, stopword filtering, tokenization, and WordNet lemmatization.
+              Complete text cleaning: HTML removal, stopword filtering, tokenization, and WordNet lemmatization.
             </p>
           </div>
 

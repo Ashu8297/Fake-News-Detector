@@ -20,19 +20,19 @@ export default function AboutPage() {
   const vivaQuestions = [
     {
       q: "Q1: What is the primary objective of TruthLens AI?",
-      a: "TruthLens AI is an intelligent misinformation detection platform that classifies news text as REAL or FAKE using TF-IDF feature extraction, benchmarks multiple machine learning algorithms (Logistic Regression, Naive Bayes, Linear SVM, Random Forest), and provides AI explanations, URL scraping, PDF/Image OCR parsing, sentiment analysis, emotion detection, and clickbait scoring."
+      a: "TruthLens AI is an intelligent misinformation detection platform that classifies news text as REAL or FAKE using TF-IDF feature extraction, benchmarks multiple machine learning algorithms (Logistic Regression, Naive Bayes, Linear SVM, Random Forest), and provides AI explanations, sentiment analysis, emotion detection, and clickbait scoring."
     },
     {
       q: "Q2: How does the NLP Preprocessing pipeline clean input text?",
-      a: "Text passes through a 5-step pipeline: 1) Lowercase conversion, 2) Regex URL/HTML removal, 3) Punctuation & number removal, 4) Tokenization & English stopword filtering, and 5) WordNet lemmatization to isolate canonical word roots."
+      a: "Text passes through a 5-step pipeline: 1) Lowercase conversion, 2) Regex HTML removal, 3) Punctuation & number removal, 4) Tokenization & English stopword filtering, and 5) WordNet lemmatization to isolate canonical word roots."
     },
     {
       q: "Q3: Explain the role of TF-IDF Vectorization.",
       a: "TF-IDF (Term Frequency - Inverse Document Frequency) measures term importance relative to the corpus. High TF-IDF weights indicate distinctive vocabulary. TruthLens AI extracts up to 5,000 unigram and bigram features (ngram_range=(1,2))."
     },
     {
-      q: "Q4: How does the system handle multi-modal inputs (URL, PDF, OCR)?",
-      a: "URL input uses BeautifulSoup to extract main article paragraphs; PDF upload uses pypdf to extract document streams; and Image/Screenshot upload uses PIL and OCR to extract headline text before passing the clean string to the prediction pipeline."
+      q: "Q4: How is raw text handled for prediction?",
+      a: "Input text is normalized and cleaned before being transformed into TF-IDF features. The model then evaluates word patterns and signals to determine veracity."
     },
     {
       q: "Q5: What security controls are implemented?",
@@ -45,7 +45,7 @@ export default function AboutPage() {
     { slide: "Slide 2: Problem Statement & Motivation", notes: "The rapid spread of online misinformation poses severe societal risks. Manual fact-checking is slow; TruthLens AI provides instant, automated empirical verification." },
     { slide: "Slide 3: System Architecture & Workflow", notes: "Highlight the multi-tier architecture: React SPA -> FastAPI REST API -> Scikit-learn NLP Engine -> SQLite History Database." },
     { slide: "Slide 4: Machine Learning & NLP Results", notes: "Discuss the ISOT dataset evaluation: 5,000 TF-IDF features, benchmark results for 4 candidate classifiers, and 100% F1-score selection." },
-    { slide: "Slide 5: Live Demonstration & Features", notes: "Demonstrate multi-modal classification (Text, URL, PDF, OCR, Voice), animated confidence gauge, 5-bullet summary, sentiment gauges, and dashboard charts." }
+    { slide: "Slide 5: Live Demonstration & Features", notes: "Demonstrate raw text classification, animated confidence gauge, 5-bullet summary, sentiment gauges, and dashboard charts." }
   ];
 
   return (

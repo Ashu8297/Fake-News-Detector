@@ -1,37 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Search, 
   Trash2, 
   Sparkles, 
-  CheckCircle2, 
   AlertOctagon, 
   Copy, 
   Check, 
   Loader2, 
   Info, 
   Tag, 
-  Link as LinkIcon, 
-  FileText, 
-  Image as ImageIcon, 
-  Mic, 
   Volume2, 
   Bookmark, 
-  Download, 
   BrainCircuit, 
   Smile, 
-  Zap,
-  ListOrdered
+  Zap
 } from 'lucide-react';
 import axios from 'axios';
 import ConfidenceMeter from '../components/ConfidenceMeter';
 import ProbabilityBar from '../components/ProbabilityBar';
 
 export default function PredictPage({ preloadedText, setPreloadedText, showToast }) {
-  const [activeTab, setActiveTab] = useState('text'); // text | url | pdf | image | voice
   const [text, setText] = useState('');
-  const [url, setUrl] = useState('');
-  const [file, setFile] = useState(null);
-  const [isRecording, setIsRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -42,7 +30,6 @@ export default function PredictPage({ preloadedText, setPreloadedText, showToast
   useEffect(() => {
     if (preloadedText) {
       setText(preloadedText);
-      setActiveTab('text');
       setPreloadedText('');
     }
   }, [preloadedText, setPreloadedText]);
@@ -54,41 +41,13 @@ export default function PredictPage({ preloadedText, setPreloadedText, showToast
     setBookmarked(false);
 
     try {
-      let response;
-      if (activeTab === 'text' || activeTab === 'voice') {
-        if (!text || !text.trim()) {
-          setError('Please enter news article text or headline to evaluate.');
-          setLoading(false);
-          return;
-        }
-        response = await axios.post('/api/predict', { text: text.trim() });
-      } else if (activeTab === 'url') {
-        if (!url || !url.trim()) {
-          setError('Please enter a valid news article URL.');
-          setLoading(false);
-          return;
-        }
-        response = await axios.post('/api/predict-url', { url: url.trim() });
-      } else if (activeTab === 'pdf' || activeTab === 'image') {
-        if (!file) {
-          setError(`Please select a ${activeTab.toUpperCase()} file to upload.`);
-          setLoading(false);
-          return;
-        }
-        if (file.size > 20 * 1024 * 1024) {
-          const mb = (file.size / (1024 * 1024)).toFixed(1);
-          setError(`Selected file size (${mb} MB) exceeds the maximum limit of 20 MB. Please upload a smaller file.`);
-          setLoading(false);
-          return;
-        }
-        const formData = new FormData();
-        formData.append('file', file);
-        const endpoint = activeTab === 'pdf' ? '/api/predict-pdf' : '/api/predict-image';
-        response = await axios.post(endpoint, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+      if (!text || !text.trim()) {
+        setError('Please paste the news article text or social media post to evaluate.');
+        setLoading(false);
+        return;
       }
 
+      const response = await axios.post('/api/predict', { text: text.trim() });
       if (response && response.data && response.data.data) {
         setResult(response.data.data);
       }
@@ -99,39 +58,6 @@ export default function PredictPage({ preloadedText, setPreloadedText, showToast
     }
   };
 
-  const handleVoiceInput = () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      showToast('Speech recognition is not supported in this browser.', 'error');
-      return;
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    recognition.onstart = () => {
-      setIsRecording(true);
-      showToast('Listening... Speak your news article now.');
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setText((prev) => (prev ? prev + ' ' + transcript : transcript));
-      setIsRecording(false);
-    };
-
-    recognition.onerror = () => {
-      setIsRecording(false);
-      showToast('Speech input error or canceled.', 'error');
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-    };
-
-    recognition.start();
-  };
 
   const handleTextToSpeech = () => {
     if (!result) return;
@@ -145,7 +71,7 @@ export default function PredictPage({ preloadedText, setPreloadedText, showToast
     if (!result || bookmarked) return;
     try {
       await axios.post('/api/bookmarks', {
-        news_text: result.cleaned_text || text || url,
+        news_text: result.cleaned_text || text,
         prediction: result.prediction,
         confidence: result.confidence
       });
@@ -176,8 +102,6 @@ export default function PredictPage({ preloadedText, setPreloadedText, showToast
 
   const handleClear = () => {
     setText('');
-    setUrl('');
-    setFile(null);
     setResult(null);
     setError('');
   };
@@ -190,105 +114,27 @@ export default function PredictPage({ preloadedText, setPreloadedText, showToast
       {/* Header */}
       <div className="space-y-2 text-center">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
-          Multi-Modal Fact-Checking Engine
+          AI Fake News Detection
         </h1>
         <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-          Verify veracity across Text, News URLs, PDF Reports, Image Screenshots, or Voice Input.
+          Paste any news article, social media post, or text to verify whether it is Real or Fake using AI.
         </p>
-      </div>
-
-      {/* Input Mode Navigation Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 p-1.5 rounded-2xl glass-panel border border-slate-300 dark:border-slate-800">
-        {[
-          { id: 'text', label: 'Raw Text', icon: Search },
-          { id: 'url', label: 'News URL', icon: LinkIcon },
-          { id: 'pdf', label: 'PDF Document', icon: FileText },
-          { id: 'image', label: 'Image OCR', icon: ImageIcon },
-          { id: 'voice', label: 'Voice Input', icon: Mic }
-        ].map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setActiveTab(tab.id);
-                setError('');
-              }}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                isActive
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
       </div>
 
       {/* Input Container */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl space-y-4 border border-slate-300 dark:border-slate-800">
-        
-        {/* Tab 1 & Tab 5: Raw Text or Voice */}
-        {(activeTab === 'text' || activeTab === 'voice') && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                {activeTab === 'voice' ? 'Voice Transcript / Dictation' : 'Article Text or Headline'}
-              </label>
-              {activeTab === 'voice' && (
-                <button
-                  onClick={handleVoiceInput}
-                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-bold ${
-                    isRecording ? 'bg-rose-600 text-white animate-pulse' : 'bg-indigo-600 text-white'
-                  }`}
-                >
-                  <Mic className="w-4 h-4" />
-                  <span>{isRecording ? 'Listening...' : 'Start Voice Recording'}</span>
-                </button>
-              )}
-            </div>
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Paste article text or dictation here..."
-              rows={6}
-              className="w-full p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        )}
-
-        {/* Tab 2: URL Input */}
-        {activeTab === 'url' && (
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">News Article Web URL</label>
-            <input
-              type="url"
-              placeholder="https://example-news-site.com/article/123"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="w-full p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        )}
-
-        {/* Tab 3 & 4: PDF or Image File Upload */}
-        {(activeTab === 'pdf' || activeTab === 'image') && (
-          <div className="space-y-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex justify-between items-center">
-              <span>Upload {activeTab.toUpperCase()} File</span>
-              <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 lowercase font-mono">Max file size: 20 MB</span>
-            </label>
-            <input
-              type="file"
-              accept={activeTab === 'pdf' ? '.pdf' : 'image/*'}
-              onChange={(e) => setFile(e.target.files[0] || null)}
-              className="w-full p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-slate-100"
-            />
-          </div>
-        )}
+        <div className="space-y-3">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+            Article Text or Headline
+          </label>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Paste article text or social media post here..."
+            rows={8}
+            className="w-full p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
         {error && (
           <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center space-x-2">

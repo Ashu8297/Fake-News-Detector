@@ -17,7 +17,7 @@ export default function Footer({ setActivePage }) {
               </span>
             </div>
             <p className="text-sm text-slate-700 dark:text-slate-300 font-medium max-w-md">
-              A production-ready, multi-modal NLP & Machine Learning system designed to analyze and classify news articles with high precision. Built for academic research and empirical truth verification.
+              A production-ready NLP & Machine Learning system designed to analyze and classify news articles using raw text verification. Built for academic research and empirical truth verification.
             </p>
           </div>
 

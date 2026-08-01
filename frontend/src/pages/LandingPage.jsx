@@ -6,9 +6,6 @@ import {
   Search, 
   BrainCircuit, 
   Zap, 
-  FileText, 
-  Image as ImageIcon, 
-  Mic, 
   TrendingUp, 
   Lock, 
   Bot, 
@@ -22,7 +19,7 @@ export default function LandingPage({ setActivePage, setPreloadedText }) {
   const [openFaq, setOpenFaq] = useState(null);
 
   const featuresList = [
-    { title: "AI Fake News Detection", desc: "Multi-model ML classification into Real or Fake with confidence score." },
+    { title: "AI Fake News Detection", desc: "ML classification into Real or Fake with confidence score for raw text input." },
     { title: "AI Explanation Generator", desc: "Bullet-point reasons explaining linguistic markers and patterns." },
     { title: "Suspicious Keyword Detection", desc: "Highlights terms like BREAKING, SHOCKING, SECRET, and EXCLUSIVE." },
     { title: "Animated Confidence Meter", desc: "Circular gauge visualizing classification certainty." },
@@ -31,10 +28,6 @@ export default function LandingPage({ setActivePage, setPreloadedText }) {
     { title: "Sentiment Analysis", desc: "Evaluates Positive, Neutral, and Negative article tone." },
     { title: "Emotion Detection", desc: "Measures Fear, Anger, Joy, Sadness, and Surprise metrics." },
     { title: "Clickbait Score", desc: "Calculates clickbait probability index from 0 to 100." },
-    { title: "URL Article Extractor", desc: "Scrapes live news URLs and runs automated veracity inspection." },
-    { title: "PDF Document Parsing", desc: "Extracts text from uploaded PDF news reports." },
-    { title: "Image & Screenshot OCR", desc: "Extracts text from uploaded newspaper screenshots." },
-    { title: "Voice Speech Input", desc: "Dictate news articles via speech recognition." },
     { title: "Text-to-Speech Playback", desc: "Audio playback of prediction rationale." },
     { title: "SQLite Audit History", desc: "Persistent prediction logs with search and pagination." },
     { title: "Multi-Format Export", desc: "Export history to CSV and JSON formats." },
@@ -50,7 +43,7 @@ export default function LandingPage({ setActivePage, setPreloadedText }) {
 
   const faqs = [
     { q: "What dataset is TruthLens AI trained on?", a: "TruthLens AI is trained on the ISOT Fake News Dataset, which combines real Reuters articles with flagged misinformation across world news and politics." },
-    { q: "How does URL and OCR prediction work?", a: "URL scraping extracts article body paragraphs using BeautifulSoup, while Image OCR extracts headline text from uploaded screenshots prior to TF-IDF feature transformation." },
+    { q: "How is raw text prepared for prediction?", a: "Input text is cleaned by removing HTML, punctuation, and stopwords, then normalized and transformed with TF-IDF for reliable truth/fake classification." },
     { q: "What algorithms are evaluated during training?", a: "The system fits 5,000 TF-IDF n-grams and benchmarks Logistic Regression, Multinomial Naive Bayes, Linear SVM (Calibrated), and Random Forest to select the top model by F1 Score." }
   ];
 
@@ -81,7 +74,7 @@ export default function LandingPage({ setActivePage, setPreloadedText }) {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
-            Verify news authenticity across Text, URLs, PDF reports, Image Screenshots, and Voice input. Powered by 5,000 TF-IDF features, multi-model Machine Learning, AI summarization, sentiment analysis, and interactive analytics.
+            Paste any news article, social media post, or raw text to determine whether it is Real or Fake using AI-powered classification and explainable insights.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">
@@ -110,7 +103,7 @@ export default function LandingPage({ setActivePage, setPreloadedText }) {
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">Platform Capabilities Overview</h2>
           <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            TruthLens AI combines multi-modal input processing, Machine Learning benchmarking, and interactive visualizations.
+            TruthLens AI combines raw text verification, Machine Learning benchmarking, and interactive visualizations.
           </p>
         </div>
 

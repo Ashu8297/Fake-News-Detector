@@ -1,11 +1,8 @@
 """
-Advanced NLP & Multi-Modal Text Analytics Utilities for TruthLens AI.
+Advanced NLP Text Analytics Utilities for TruthLens AI.
 
 Includes:
 - Text validation & export formatters (CSV, JSON)
-- URL Web Article Scraper (BeautifulSoup)
-- PDF Document Text Extractor (pypdf)
-- Image OCR Text Extractor (PIL / PyTesseract fallback)
 - AI News Summarizer (5 Intelligent Key Executive Bullets)
 - Sentiment Analysis (Positive, Neutral, Negative)
 - Emotion Detection (Fear, Anger, Joy, Sadness, Surprise)
@@ -17,15 +14,7 @@ import io
 import re
 import csv
 import json
-import urllib.request
 from typing import List, Dict, Any, Tuple
-from bs4 import BeautifulSoup
-from PIL import Image
-
-try:
-    from pypdf import PdfReader
-except ImportError:
-    PdfReader = None
 
 Tuple_Validation = Tuple[bool, str]
 
@@ -55,71 +44,6 @@ def validate_news_input(text: str, min_words: int = 3, max_length: int = 50000) 
     return True, ""
 
 
-def extract_text_from_url(url: str) -> str:
-    """Scrapes main article paragraphs from a news webpage URL."""
-    if not url.startswith(("http://", "https://")):
-        url = "https://" + url
-
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-    req = urllib.request.Request(url, headers=headers)
-
-    with urllib.request.urlopen(req, timeout=10) as response:
-        html = response.read().decode('utf-8', errors='ignore')
-
-    soup = BeautifulSoup(html, 'html.parser')
-    for elem in soup(["script", "style", "nav", "footer", "header"]):
-        elem.extract()
-
-    paragraphs = [p.get_text().strip() for p in soup.find_all('p') if len(p.get_text().strip()) > 30]
-
-    if not paragraphs:
-        text = soup.get_text()
-        lines = (line.strip() for line in text.splitlines())
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        text = ' '.join(chunk for chunk in chunks if chunk)
-        return text[:4000]
-
-    return " ".join(paragraphs[:10])
-
-
-def extract_text_from_pdf(file_bytes: bytes) -> str:
-    """Extracts text content from an uploaded PDF document."""
-    if not PdfReader:
-        return "PDF reader module unavailable. Please upload plain text or use image OCR."
-
-    pdf_file = io.BytesIO(file_bytes)
-    reader = PdfReader(pdf_file)
-    extracted_text = []
-
-    for page in reader.pages:
-        txt = page.extract_text()
-        if txt:
-            extracted_text.append(txt)
-
-    full_text = " ".join(extracted_text).strip()
-    if not full_text:
-        raise ValueError("Could not extract readable text from PDF file. It might contain scanned images.")
-
-    return full_text
-
-
-def extract_text_from_image(file_bytes: bytes) -> str:
-    """Extracts text from an image or screenshot using OCR or image stream parsing."""
-    try:
-        import pytesseract
-        image = Image.open(io.BytesIO(file_bytes))
-        text = pytesseract.image_to_string(image)
-        if text.strip():
-            return text.strip()
-    except Exception:
-        pass
-
-    try:
-        img = Image.open(io.BytesIO(file_bytes))
-        width, height = img.size
-        return f"BREAKING NEWS screenshot captured ({width}x{height} pixels). Leaked reports reveal details!"
-    except Exception as e:
-        raise ValueError(f"Failed to process image file: {str(e)}")
 
 
 def generate_ai_summary(text: str) -> List[str]:
@@ -196,7 +120,7 @@ def generate_ai_summary(text: str) -> List[str]:
             elif i == 3:
                 bullets.append(f"{labels[i]}: Evaluation detected low risk of sensationalism with objective terminology.")
             else:
-                bullets.append(f"{labels[i]}: Cross-verified against multi-modal NLP veracity metrics.")
+                bullets.append(f"{labels[i]}: Cross-verified against core NLP veracity metrics.")
 
     return bullets[:5]
 
