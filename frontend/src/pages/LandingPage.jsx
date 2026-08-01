@@ -33,7 +33,6 @@ export default function LandingPage({ setActivePage, setPreloadedText }) {
     { title: "Multi-Format Export", desc: "Export history to CSV and JSON formats." },
     { title: "Analytics Dashboard", desc: "Interactive Pie, Bar, and Line charts using Recharts." },
     { title: "AI Chat Assistant", desc: "Embedded chatbot answering fact-checking queries." },
-    { title: "Side-by-Side Comparison", desc: "Compare multiple news articles simultaneously." },
     { title: "Batch Article Analysis", desc: "Predict bulk lists of news text." },
     { title: "JWT User Authentication", desc: "Secure Register, Login, and Profile authorization." },
     { title: "Saved Bookmarks", desc: "Bookmark key verification reports." },

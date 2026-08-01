@@ -11,7 +11,6 @@ import LandingPage from './pages/LandingPage';
 import PredictPage from './pages/PredictPage';
 import DashboardPage from './pages/DashboardPage';
 import AnalyticsPage from './pages/AnalyticsPage';
-import ComparePage from './pages/ComparePage';
 import HistoryPage from './pages/HistoryPage';
 import AboutPage from './pages/AboutPage';
 import ProfilePage from './pages/ProfilePage';
@@ -66,8 +65,6 @@ function AppContent() {
         return <DashboardPage />;
       case 'analytics':
         return <AnalyticsPage />;
-      case 'compare':
-        return <ComparePage />;
       case 'history':
         return <HistoryPage showToast={showToast} />;
       case 'about':

@@ -5,8 +5,7 @@ import {
   Search, 
   BarChart3, 
   History, 
-  TrendingUp, 
-  GitCompare, 
+  TrendingUp,
   Info, 
   User, 
   ShieldAlert, 
@@ -21,7 +20,6 @@ export default function Navbar({ activePage, setActivePage, isDark, setIsDark, t
     { id: 'predict', label: 'Predict', icon: Search },
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-    { id: 'compare', label: 'Compare', icon: GitCompare },
     { id: 'history', label: 'History', icon: History },
     { id: 'about', label: 'About', icon: Info },
   ];

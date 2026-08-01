@@ -24,6 +24,7 @@ Expanded Users Table Fields:
 
 import os
 import sqlite3
+import time
 import datetime
 from typing import List, Dict, Any, Tuple
 from services.auth_service import hash_password
@@ -43,11 +44,13 @@ DB_PATH = get_db_path()
 
 
 def get_connection():
-    """Returns a SQLite database connection with Row factory enabled."""
+    """Returns a SQLite database connection configured for concurrent access."""
     db_path = get_db_path()
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(db_path, timeout=30, check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL;")
+    conn.execute("PRAGMA foreign_keys = ON;")
     return conn
 
 
@@ -370,22 +373,31 @@ def admin_delete_user(user_id: int) -> bool:
 
 def add_prediction(news_text: str, prediction: str, confidence: float) -> Dict[str, Any]:
     created_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO PredictionHistory (news_text, prediction, confidence, created_at)
-            VALUES (?, ?, ?, ?)
-        """, (news_text, prediction, float(confidence), created_at))
-        conn.commit()
-        record_id = cursor.lastrowid
+    attempt = 0
+    while True:
+        try:
+            with get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO PredictionHistory (news_text, prediction, confidence, created_at)
+                    VALUES (?, ?, ?, ?)
+                """, (news_text, prediction, float(confidence), created_at))
+                conn.commit()
+                record_id = cursor.lastrowid
 
-    return {
-        "id": record_id,
-        "news_text": news_text,
-        "prediction": prediction,
-        "confidence": confidence,
-        "created_at": created_at
-    }
+            return {
+                "id": record_id,
+                "news_text": news_text,
+                "prediction": prediction,
+                "confidence": confidence,
+                "created_at": created_at
+            }
+        except sqlite3.OperationalError as exc:
+            if "database is locked" in str(exc).lower() and attempt < 5:
+                attempt += 1
+                time.sleep(0.1 * attempt)
+                continue
+            raise
 
 
 def get_history(page: int = 1, limit: int = 10, search: str = "") -> Tuple[List[Dict[str, Any]], int]:

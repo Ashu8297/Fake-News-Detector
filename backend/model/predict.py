@@ -56,6 +56,10 @@ class NewsPredictor:
         else:
             print("[Predictor] Saved model files not found. Model will train on demand.")
 
+        if not self.model or not self.vectorizer:
+            print(f"[Predictor] Expected model path: {self.model_path}")
+            print(f"[Predictor] Expected vectorizer path: {self.vectorizer_path}")
+
     def predict(self, raw_text: str) -> Dict[str, Any]:
         """
         Classifies raw news text and calculates calibrated confidence (>90%).
